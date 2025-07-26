@@ -1,5 +1,7 @@
 module learnchain::certification_batch;
 
+use sui::table::{Self, Table};
+
 
 public struct CertificationBatch has key, store {
     id: UID,
@@ -10,6 +12,15 @@ public struct CertificationBatch has key, store {
 
 public struct CertificationBatchCreatedEvent  has drop,  copy{
     id: ID,
-    institution_address:  address,
+    institution_address: address,
     creator: address,
 }
+
+public(package) fun delete(
+    cert_table: Table<u16, CertificationBatch>
+) {
+   
+}
+
+
+
