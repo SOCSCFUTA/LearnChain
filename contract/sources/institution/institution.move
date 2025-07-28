@@ -5,7 +5,6 @@ use sui::table::{Self, Table};
 use sui::event as push;
 use std::option::Option;
 use learnchain::certification_batch::{Self, CertificationBatch};
-use learnchain::signer::SignerCap;
 
 //error code
 const ENotAuthorized: u64 = 10007;
@@ -15,7 +14,14 @@ public struct Institution has key {
     name: String,
     public_key: vector<u8>,
     offers_revokable_cert_batch: Option<bool>,
-    cert_batch_issued: Table<u16, CertificationBatch>
+    cert_batch_issued: Table<u16, CertificationBatch>,
+    releases: Releases
+}
+
+public struct Releases has store, drop, copy{
+     count: u16,
+     initial: u64,
+     latest: u64
 }
 
 public struct InstitutionCreatedEvent has drop, copy {
@@ -33,7 +39,6 @@ public(package) fun create(
     name: String,
     public_key: vector<u8>,
     offers_revokable_cert_batch: Option<bool>,
-    _: SignerCap,
     ctx: &mut TxContext
 ): Institution {
 
@@ -43,6 +48,11 @@ public(package) fun create(
         public_key,
         offers_revokable_cert_batch,
         cert_batch_issued: table::new<u16, CertificationBatch>(ctx),
+        releases: Releases {
+            count: 0,
+            initial: 0000,
+            latest: 0000
+        }
     };
 
     push::emit(
@@ -59,7 +69,6 @@ public(package) fun delete (
     institution: Institution,
     public_key: vector<u8>,
     reason: String,
-    _: SignerCap,
     ctx:  &mut TxContext
 ) {
 
@@ -78,9 +87,17 @@ public(package) fun delete (
         name: _,
         public_key: _,
         offers_revokable_cert_batch: _,
-        cert_batch_issued
+        mut cert_batch_issued,
+        releases
     } = institution;
 
-    certification_batch::delete(cert_batch_issued);
-    id.delete();
+    let mut index = releases.count -1;
+    while (cert_batch_issued.length() > 0) {
+        let batch = cert_batch_issued.remove(index);
+        certification_batch::delete(batch);
+        index = index - 1;
+    };
+
+    cert_batch_issued.destroy_empty();
+    id.delete()
 }

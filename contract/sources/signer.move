@@ -11,6 +11,12 @@ public struct SignerCapMinted has drop, copy {
     creator: address
 }
 
+public struct SignerCapTransfered has drop, copy {
+    id: ID,
+    previous_owner: address,
+    new_owner: address
+}
+
 public struct SIGNER has drop {}
 
 fun init(
@@ -33,7 +39,6 @@ fun init(
 }
 
 public(package) fun mint(
-    _: SignerCap,
     ctx: &mut TxContext
 ): SignerCap {
 
@@ -47,7 +52,21 @@ public(package) fun mint(
             creator:  ctx.sender()
         }
     });
-
     cap
+}
 
+public(package) fun transfer(
+    cap: SignerCap,
+    reciever: address,
+    ctx: &mut TxContext
+){
+    push::emit({
+        SignerCapTransfered{
+            id:  object::id(&cap),
+            previous_owner: ctx.sender(),
+            new_owner: reciever
+        }
+    });
+
+    transfer::public_transfer(cap, reciever);
 }

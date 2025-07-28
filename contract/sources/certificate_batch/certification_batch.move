@@ -17,9 +17,16 @@ public struct CertificationBatchCreatedEvent  has drop,  copy{
 }
 
 public(package) fun delete(
-    cert_table: Table<u16, CertificationBatch>
+    cert: CertificationBatch
 ) {
-   
+    let CertificationBatch {
+        id,
+        institution_address: _,
+        batch_year: _,
+        cert_hashes: _
+    } = cert;
+
+    id.delete();
 }
 
 
