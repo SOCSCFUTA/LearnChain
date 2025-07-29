@@ -5,6 +5,7 @@ use sui::table::{Self, Table};
 use sui::event as push;
 use std::option::Option;
 use learnchain::certification_batch::{Self, CertificationBatch};
+use learnchain::signer::SignerCap;
 
 //error code
 const ENotAuthorized: u64 = 10007;
