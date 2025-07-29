@@ -21,7 +21,7 @@ public struct CertificationBatchCreatedEvent  has drop,  copy{
 public(package) fun create(
     issuer: address,
     batch_year: u16,
-    cert_hashes: vector<String>,
+    cert_hashes: vector<vector<u8>>,
     count: u16,
     ctx: &mut TxContext
 ): CertificationBatch{
@@ -37,16 +37,16 @@ public(package) fun create(
 
 public(package) fun  remove_hash(
    hash_batch: &mut CertificationBatch,
-   hash: String,
+   index: u64,
 ): &CertificationBatch{
 
-    hash_batch.cert_hashes.pop_back(hash);
+    hash_batch.cert_hashes.remove(index);
     hash_batch
 }
 
 public(package) fun add_hash(
     hash_batch: &mut CertificationBatch,
-    hash: String,
+    hash: vector<u8>,
 ): &CertificationBatch{
 
     hash_batch.cert_hashes.push_back(hash);
@@ -58,9 +58,10 @@ public(package) fun delete(
 ) {
     let CertificationBatch {
         id,
-        institution_address: _,
+        issuer: _,
         batch_year: _,
-        cert_hashes: _
+        cert_hashes: _,
+        count: _
     } = cert;
 
     id.delete();
