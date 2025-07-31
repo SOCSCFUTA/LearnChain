@@ -3,18 +3,18 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
 
-# Backend Overview
+# Overview
 
 This backend powers a certificate verification system. It enables organizations to securely issue certificates for students, ensuring authenticity and preventing forgery. Organizations can obtain API keys to manage certificates, including issuing, modifying, revoking, and verifying them through API endpoints.
 
-### Main features:
+## Main features:
 - API key management for organizations
 - Certificate issuance and modification
 - Certificate revocation
 - Certificate verification
 
 
-### How to use API Documentation
+## How to use API Documentation
 
 <details open>
 <summary>📚 <strong>Quickstart</strong> - Basic Usage</summary>
@@ -33,7 +33,6 @@ This backend powers a certificate verification system. It enables organizations 
 
 </details>
 
-</br>
 <details>
 <summary>🔥 <strong>Developer Guide:</strong> - Testing & Development</summary>
 
