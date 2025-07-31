@@ -95,7 +95,7 @@ public(package) fun delete (
     let mut index = releases.count -1;
     while (cert_batch_issued.length() > 0) {
         let batch = cert_batch_issued.remove(index);
-        certification_batch::delete(batch);
+        certification_batch::delete_batch(batch);
         index = index - 1;
     };
 

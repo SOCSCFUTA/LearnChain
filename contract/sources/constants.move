@@ -10,3 +10,7 @@ const EInstitutionAlreadyRegisteres: u64 = 10004;
 const EInvalidInputValue: u64 = 10005;
 const ECertificateAlreadyRevoked: u64 = 10006;
 const ENotAuthorized: u64 = 10007;
+const ECertificateAlreadyUnrevoked: u64 = 10008;
+const ECertificateHashCannotBeDeleted: u64 = 10009;
+const EBatchNoLongerAcceptsHash: u64 = 10010;
+const EHashCannotBeRemovedFromBatch: u64 = 10011;
