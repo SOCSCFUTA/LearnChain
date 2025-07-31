@@ -24,7 +24,7 @@ This backend powers a certificate verification system. It enables organizations 
     The website will render interactive API docs. Explore available endpoints, parameters, request/response formats, and authentication requirements directly in your browser.
 
 4. **Refer to examples and schemas**  
-    Review example requests/responses and schema definitions provided in the rendered documentation.
+    Review example requests/responses and **schema** definitions provided in the rendered documentation.
 
 </details>
 
@@ -45,5 +45,5 @@ This backend powers a certificate verification system. It enables organizations 
     The extension will render interactive API documentation directly in VS Code. Browse endpoints, parameters, request/response formats, and authentication details.
 
 5. **Refer to examples and try out requests**  
-    Some extensions allow you to try out API requests or view example payloads directly within the editor.
+    Some extensions allow you to try out API requests or view example and payloads schemas directly within the editor.
 </details>
