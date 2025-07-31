@@ -2,6 +2,10 @@ module learnchain::certification_batch;
 
 use sui::table::{Self, Table};
 use std::string::String;
+use learnchain::key_hash::{Self, KeyHash};
+
+const EBatchNoLongerAcceptsHash: u64 = 10010;
+const EHashCannotBeRemovedFromBatch: u64 = 10011;
 
 
 public struct CertificationBatch has key, store {
@@ -9,7 +13,8 @@ public struct CertificationBatch has key, store {
     issuer: address,
     batch_year: u16,
     count: u16,
-    cert_hashes: vector<vector<u8>> //holds the hash of each candidate's graduating certificate. 
+    accepts: bool,  //this is set to true for only a few minutes of hash addition
+    hashes: vector<KeyHash> //holds the hash of each candidate's graduating certificate. 
 }
 
 public struct CertificationBatchCreatedEvent  has drop,  copy{
@@ -18,10 +23,11 @@ public struct CertificationBatchCreatedEvent  has drop,  copy{
     creator: address,
 }
 
-public(package) fun create(
+public(package) fun create_and_initialize_hash_addition(
     issuer: address,
     batch_year: u16,
-    cert_hashes: vector<vector<u8>>,
+    hash: vector<u8>,
+    key: vector<u8>,
     count: u16,
     ctx: &mut TxContext
 ): CertificationBatch{
@@ -31,37 +37,45 @@ public(package) fun create(
         issuer,
         batch_year,
         count,
-        cert_hashes
+        accepts: true,
+        hashes: vector[key_hash::create(key, hash)],
     }
 }
 
-public(package) fun  remove_hash(
-   hash_batch: &mut CertificationBatch,
-   index: u64,
-): &CertificationBatch{
 
-    hash_batch.cert_hashes.remove(index);
-    hash_batch
-}
-
-public(package) fun add_hash(
-    hash_batch: &mut CertificationBatch,
+public(package) fun add_hash_to_batch(
+    batch: &mut CertificationBatch,
     hash: vector<u8>,
-): &CertificationBatch{
-
-    hash_batch.cert_hashes.push_back(hash);
-    hash_batch
+    key: vector<u8>
+){
+    assert!(batch.accepts, EBatchNoLongerAcceptsHash);
+    
+    batch.hashes.push_back(key_hash::create(key, hash))
 }
 
-public(package) fun delete(
+public(package) fun end_hash_addition_cycle(
+    batch: &mut CertificationBatch
+){
+    batch.accepts = false;
+}
+
+public(package) fun delete_hash_from_batch (
+    batch: &mut CertificationBatch,
+    index: u16
+){
+    abort EHashCannotBeRemovedFromBatch;
+}
+
+public(package) fun delete_batch(
     cert: CertificationBatch
 ) {
     let CertificationBatch {
         id,
         issuer: _,
         batch_year: _,
-        cert_hashes: _,
-        count: _
+        count: _,
+        accepts: _,
+        hashes: _,
     } = cert;
 
     id.delete();
