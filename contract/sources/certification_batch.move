@@ -13,7 +13,6 @@ public struct CertificationBatch has key, store {
     issuer: address,
     batch_year: u16,
     count: u16,
-    accepts: bool,  //this is set to true for only a few minutes of hash addition
     hashes: vector<KeyHash> //holds the hash of each candidate's graduating certificate. 
 }
 
@@ -23,7 +22,7 @@ public struct CertificationBatchCreatedEvent  has drop,  copy{
     creator: address,
 }
 
-public(package) fun create_and_initialize_hash_addition(
+public(package) fun create(
     issuer: address,
     batch_year: u16,
     hash: vector<u8>,
@@ -37,7 +36,6 @@ public(package) fun create_and_initialize_hash_addition(
         issuer,
         batch_year,
         count,
-        accepts: true,
         hashes: vector[key_hash::create(key, hash)],
     }
 }
@@ -48,16 +46,10 @@ public(package) fun add_hash_to_batch(
     hash: vector<u8>,
     key: vector<u8>
 ){
-    assert!(batch.accepts, EBatchNoLongerAcceptsHash);
     
     batch.hashes.push_back(key_hash::create(key, hash))
 }
 
-public(package) fun end_hash_addition_cycle(
-    batch: &mut CertificationBatch
-){
-    batch.accepts = false;
-}
 
 public(package) fun delete_hash_from_batch (
     batch: &mut CertificationBatch,
@@ -74,7 +66,6 @@ public(package) fun delete_batch(
         issuer: _,
         batch_year: _,
         count: _,
-        accepts: _,
         hashes: _,
     } = cert;
 

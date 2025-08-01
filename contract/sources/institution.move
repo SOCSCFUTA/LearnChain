@@ -1,104 +1,67 @@
 module learnchain::institution;
 
-use std::string::String;
-use sui::table::{Self, Table};
+
 use sui::event as push;
-use std::option::Option;
-use learnchain::certification_batch::{Self, CertificationBatch};
-use learnchain::signer::SignerCap;
+use std::string::String;
+use sui::url::Url;
+use sui::table::{Self, Table};
+use learnchain::certification_batch::CertificationBatch;
+use  learnchain::certification_batch_metrics::CertificationBatchMetrics;
 
-//error code
-const ENotAuthorized: u64 = 10007;
-
-public struct Institution has key {
+public struct InstitutionCap has key {
     id: UID,
     name: String,
-    public_key: vector<u8>,
-    offers_revokable_cert_batch: Option<bool>,
-    cert_batch_issued: Table<u16, CertificationBatch>,
-    releases: Releases
+    url: Url,
+    desciption: String,
+    batch: Table<u64, CertificationBatch>,
+    metrics: Table<u64, CertificationBatchMetrics>,
+    record: Record
 }
 
-public struct Releases has store, drop, copy{
-     count: u16,
-     initial: u64,
-     latest: u64
+public struct Record has store {
+    total_cert_count: u8,
+    last_batch_size: u8,
+    revoked_cert_count: u8,
+    initial_batch_release: Option<vector<u8>>,
+    latest_batch_release: Option<vector<u8>>
 }
 
-public struct InstitutionCreatedEvent has drop, copy {
+public struct InstitutionCapMinted has drop, copy {
     id: ID,
-    creator: address,
+    creator: address
 }
 
-public struct InstitutionDeletedEvent has drop, copy {
-    id: ID,
-    reason: String,
-    deleted_by: address,
-}
+public struct INSTITUTION has drop {}
 
-public(package) fun create(
+
+public(package) fun mint(
     name: String,
-    public_key: vector<u8>,
-    offers_revokable_cert_batch: Option<bool>,
+    url: Url,
+    desciption: String,
     ctx: &mut TxContext
-): Institution {
+): InstitutionCap {
 
-    let institution = Institution {
+   let cap = InstitutionCap {
         id: object::new(ctx),
         name,
-        public_key,
-        offers_revokable_cert_batch,
-        cert_batch_issued: table::new<u16, CertificationBatch>(ctx),
-        releases: Releases {
-            count: 0,
-            initial: 0000,
-            latest: 0000
+        url,
+        desciption,
+        batch: table::new<u64, CertificationBatch>(ctx),
+        metrics: table::new<u64, CertificationBatchMetrics>(ctx),
+        record: Record {
+            total_cert_count: 0,
+            last_batch_size: 0,
+            revoked_cert_count: 0,
+            initial_batch_release: option::none(),
+            latest_batch_release: option::none()
         }
     };
 
-    push::emit(
-        InstitutionCreatedEvent{
-            id: object::id(&institution),
+    push::emit({
+        InstitutionCapMinted{
+            id: object::id(&cap),
             creator:  ctx.sender()
         }
-    );
-
-    institution
-}
-
-public(package) fun delete (
-    institution: Institution,
-    public_key: vector<u8>,
-    reason: String,
-    ctx:  &mut TxContext
-) {
-
-    assert!(institution.public_key == public_key, ENotAuthorized );
-
-    push::emit(
-        InstitutionDeletedEvent{
-            id: object::id(&institution),
-            reason,
-            deleted_by: ctx.sender()
-        }
-    );
-
-    let Institution {
-        id,
-        name: _,
-        public_key: _,
-        offers_revokable_cert_batch: _,
-        mut cert_batch_issued,
-        releases
-    } = institution;
-
-    let mut index = releases.count -1;
-    while (cert_batch_issued.length() > 0) {
-        let batch = cert_batch_issued.remove(index);
-        certification_batch::delete_batch(batch);
-        index = index - 1;
-    };
-
-    cert_batch_issued.destroy_empty();
-    id.delete()
+    });
+    cap
 }

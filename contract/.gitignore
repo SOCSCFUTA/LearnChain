@@ -1,1 +1,4 @@
 build/*
+backend/learnchain-api/node_modules/*
+backend/learnchain-api/dist/*
+backend/learnchain-api/.env
