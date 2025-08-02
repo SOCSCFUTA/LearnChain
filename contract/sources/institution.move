@@ -8,14 +8,14 @@ use sui::table::{Self, Table};
 use learnchain::certification_batch::CertificationBatch;
 use  learnchain::certification_batch_metrics::CertificationBatchMetrics;
 
-public struct InstitutionCap has key {
+public struct InstitutionCap has key, store {
     id: UID,
     name: String,
     url: Url,
     desciption: String,
     batch: Table<u64, CertificationBatch>,
     metrics: Table<u64, CertificationBatchMetrics>,
-    record: Record
+    record: Record,
 }
 
 public struct Record has store {
@@ -23,7 +23,8 @@ public struct Record has store {
     last_batch_size: u8,
     revoked_cert_count: u8,
     initial_batch_release: Option<vector<u8>>,
-    latest_batch_release: Option<vector<u8>>
+    latest_batch_release: Option<vector<u8>>,
+    offers_revokable_cert: bool
 }
 
 public struct InstitutionCapMinted has drop, copy {
@@ -38,6 +39,7 @@ public(package) fun mint(
     name: String,
     url: Url,
     desciption: String,
+    offers_revokable_cert: bool,
     ctx: &mut TxContext
 ): InstitutionCap {
 
@@ -53,7 +55,8 @@ public(package) fun mint(
             last_batch_size: 0,
             revoked_cert_count: 0,
             initial_batch_release: option::none(),
-            latest_batch_release: option::none()
+            latest_batch_release: option::none(),
+            offers_revokable_cert
         }
     };
 
