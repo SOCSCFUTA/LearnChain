@@ -3,16 +3,19 @@ module learnchain::institution;
 
 use sui::event as push;
 use std::string::String;
-use sui::url::Url;
 use sui::table::{Self, Table};
 use learnchain::certification_batch::CertificationBatch;
 use  learnchain::certification_batch_metrics::CertificationBatchMetrics;
+use std::ascii::{Self, String as AsciiString};
+use sui::url::{Self, Url};
 
-public struct InstitutionCap has key, store {
+
+public struct InstitutionProfile has key, store {
     id: UID,
     name: String,
     url: Url,
     desciption: String,
+    domain: Url,
     batch: Table<u64, CertificationBatch>,
     metrics: Table<u64, CertificationBatchMetrics>,
     record: Record,
@@ -27,7 +30,7 @@ public struct Record has store {
     offers_revokable_cert: bool
 }
 
-public struct InstitutionCapMinted has drop, copy {
+public struct InstitutionProfileMinted has drop, copy {
     id: ID,
     creator: address
 }
@@ -35,19 +38,21 @@ public struct InstitutionCapMinted has drop, copy {
 public struct INSTITUTION has drop {}
 
 
-public(package) fun mint(
+public(package) fun create(
     name: String,
-    url: Url,
+    url: vector<u8>,
     desciption: String,
+    domain: vector<u8>,
     offers_revokable_cert: bool,
     ctx: &mut TxContext
-): InstitutionCap {
+): InstitutionProfile {
 
-   let cap = InstitutionCap {
+   let cap = InstitutionProfile {
         id: object::new(ctx),
         name,
-        url,
+        url: url::new_unsafe(ascii::string(url)),
         desciption,
+        domain: url::new_unsafe(ascii::string(domain)),
         batch: table::new<u64, CertificationBatch>(ctx),
         metrics: table::new<u64, CertificationBatchMetrics>(ctx),
         record: Record {
@@ -61,10 +66,18 @@ public(package) fun mint(
     };
 
     push::emit({
-        InstitutionCapMinted{
+        InstitutionProfileMinted{
             id: object::id(&cap),
             creator:  ctx.sender()
         }
     });
     cap
+}
+
+public(package) fun add_batch_to_profile(
+    batch: CertificationBatch,
+    profile: &mut InstitutionProfile,
+    key: u64,
+){
+    profile.batch.add(key, batch);
 }

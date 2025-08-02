@@ -5,7 +5,8 @@ public struct CertificationBatchMetrics has store {
     cert_count: u64,
     issued_on: vector<u8>,
     signer_address: address,
-    revoked_count: u64
+    revoked_count: u64,
+    timestamp_in_ms: vector<u8>
 }
 
 public(package) fun create(
@@ -13,7 +14,8 @@ public(package) fun create(
     cert_count: u64,
     issued_on: vector<u8>,
     signer_address: address,
-    revoked_count: u64
+    revoked_count: u64,
+    timestamp_in_ms: vector<u8>
 ): CertificationBatchMetrics {
 
     CertificationBatchMetrics {
@@ -22,5 +24,6 @@ public(package) fun create(
         issued_on,
         signer_address,
         revoked_count,
+        timestamp_in_ms
     }
 }

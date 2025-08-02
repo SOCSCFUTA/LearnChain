@@ -6,8 +6,8 @@ const ECertificateHashCannotBeDeleted: u64 = 10009;
 
 public struct KeyHash has store, drop  {
     key: vector<u8>,
+    hash: vector<u8>,
     revoked: bool,
-    hash: vector<u8>
 }
 
 public(package) fun create (
@@ -16,8 +16,8 @@ public(package) fun create (
 ): KeyHash {
     KeyHash {
         key,
-        revoked: false,
         hash
+        revoked: false,
     }
 }
 

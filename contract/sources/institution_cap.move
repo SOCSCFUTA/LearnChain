@@ -1,10 +1,16 @@
 module learnchain::institution_cap;
 use sui::event as push;
+use std::string::String;
+use std::ascii;
+use sui::url::{Self, Url};
 
-public struct InstitutionCap has key {
+public struct InstitutionCap has key, store {
     id: UID,
+    name: String,
+    description: String,
+    url: Url,
     active: bool,
-    issuer_node_minted: bool
+    institution_profile_minted: bool
 }
 
 public struct InstiututionCapMinted has drop, copy {
@@ -17,8 +23,11 @@ public(package) fun mint (
 ): InstitutionCap{
     let cap = InstitutionCap{
         id: object::new(ctx),
+        name: b"Institution Capacity".to_string(),
+        description: b"This is your identity as a  verified institution that issues certificates to candidates.".to_string(),
+        url: url::new_unsafe(ascii::string(b"https://link-to-image.com")),
         active: true,
-        issuer_node_minted: false
+        institution_profile_minted: false
     };
 
     push::emit(
@@ -41,8 +50,11 @@ public fun delete(
 ){
     let InstitutionCap {
         id,
+        name: _,
+        description: _,
+        url: _,
         active: _,
-        issuer_node_minted: _
+        institution_profile_minted: _
     } = cap;
 
     id.delete();
@@ -54,9 +66,15 @@ public(package) fun is_active(
     cap.active
 }
 
-public(package) fun  has_minted_issuer_node(
+public(package) fun  has_minted_institution_profile(
     cap: &InstitutionCap
 ): bool {
-    cap.issuer_node_minted
+    cap.institution_profile_minted
+}
+
+public(package) fun set_minted_institution_profile(
+    cap: &mut InstitutionCap
+){
+    cap.institution_profile_minted = true;
 }
 
