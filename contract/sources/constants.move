@@ -16,3 +16,5 @@ const EBatchNoLongerAcceptsHash: u64 = 10010;
 const EHashCannotBeRemovedFromBatch: u64 = 10011;
 const EInstitutionProfileMintedAlready: u64 = 10012;
 const EKeyandHashLengthMismatch: u64 = 10013;
+const EHashKeyCannotBeEmpty:u64 = 10014;
+const EActionNotAuthoriized: u64 = 10015;

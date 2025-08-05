@@ -11,8 +11,8 @@ const EHashCannotBeRemovedFromBatch: u64 = 10011;
 public struct CertificationBatch has key, store {
     id: UID,
     issuer: address,
-    batch_year: u16,
-    count: u16,
+    key: vector<u8>,
+    count: u64,
     hashes: vector<KeyHash> //holds the hash of each candidate's graduating certificate. 
 }
 
@@ -24,19 +24,18 @@ public struct CertificationBatchCreatedEvent  has drop,  copy{
 
 public(package) fun create(
     issuer: address,
-    batch_year: u16,
-    hash: vector<u8>,
+    hashes: vector<KeyHash>,
     key: vector<u8>,
-    count: u16,
+    count: u64,
     ctx: &mut TxContext
 ): CertificationBatch{
 
     CertificationBatch{
         id: object::new(ctx),
         issuer,
-        batch_year,
+        key,
         count,
-        hashes: vector[key_hash::create(key, hash)],
+        hashes
     }
 }
 
@@ -64,7 +63,7 @@ public(package) fun delete_batch(
     let CertificationBatch {
         id,
         issuer: _,
-        batch_year: _,
+        key: _,
         count: _,
         hashes: _,
     } = cert;

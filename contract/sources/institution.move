@@ -16,9 +16,10 @@ public struct InstitutionProfile has key, store {
     url: Url,
     desciption: String,
     domain: Url,
-    batch: Table<u64, CertificationBatch>,
-    metrics: Table<u64, CertificationBatchMetrics>,
+    batch: Table<vector<u8>, CertificationBatch>,
+    metrics: Table<vector<u8>, CertificationBatchMetrics>,
     record: Record,
+    owner: address
 }
 
 public struct Record has store {
@@ -53,8 +54,8 @@ public(package) fun create(
         url: url::new_unsafe(ascii::string(url)),
         desciption,
         domain: url::new_unsafe(ascii::string(domain)),
-        batch: table::new<u64, CertificationBatch>(ctx),
-        metrics: table::new<u64, CertificationBatchMetrics>(ctx),
+        batch: table::new<vector<u8>, CertificationBatch>(ctx),
+        metrics: table::new<vector<u8>, CertificationBatchMetrics>(ctx),
         record: Record {
             total_cert_count: 0,
             last_batch_size: 0,
@@ -62,7 +63,8 @@ public(package) fun create(
             initial_batch_release: option::none(),
             latest_batch_release: option::none(),
             offers_revokable_cert
-        }
+        },
+        owner: ctx.sender()
     };
 
     push::emit({
@@ -75,9 +77,17 @@ public(package) fun create(
 }
 
 public(package) fun add_batch_to_profile(
-    batch: CertificationBatch,
     profile: &mut InstitutionProfile,
-    key: u64,
+    metrics: CertificationBatchMetrics,
+    batch: CertificationBatch,
+    key: vector<u8>,
 ){
     profile.batch.add(key, batch);
+    profile.metrics.add(key, metrics);
+}
+
+public fun get_owner(
+    institution:  &InstitutionProfile
+): address {
+    institution.owner
 }

@@ -2,13 +2,21 @@ module learnchain::entry;
 use learnchain::admin::{Self, AdminCap};
 use learnchain::institution::{Self, InstitutionProfile};
 use learnchain::institution_cap::{Self, InstitutionCap};
+use learnchain::key_hash::{Self, KeyHash};
+use learnchain::certification_batch::{Self, CertificationBatch};
+use learnchain::certification_batch_metrics;
+
 
 use std::string::String;
 use std::ascii::{Self, String as AsciiString};
 use sui::url::{Self, Url};
+use sui::clock::{Self, Clock};
 
 const EInstitutionProfileMintedAlready: u64 = 10012;
 const EKeyandHashLengthMismatch: u64 = 10013;
+const EHashKeyCannotBeEmpty:u64 = 10014;
+const EActionNotAuthoriized: u64 = 10015;
+
 //for admins
 
 ///admins can mint AdminCap for others to have admin priviledges
@@ -72,11 +80,52 @@ public entry fun create_institution_record(
 
 //the keys and hashes will be passed in as a different array to the smart contract.
 public entry fun issue_certificate_batch(
-    _: &InstitutionCap,
+    _:  &InstitutionCap,
+    clock: &Clock,
+    institution: &mut InstitutionProfile,
     keys: vector<vector<u8>>,
     hashes: vector<vector<u8>>,
-    batch_year: u64,
-    profile: &mut InstitutionProfile
+    key: vector<u8>,
+    profile: &mut InstitutionProfile,
+    ctx: &mut TxContext
 ){
+    assert!(ctx.sender() == institution.get_owner() , EActionNotAuthoriized);
+    assert!(keys.length() == hashes.length(), EKeyandHashLengthMismatch);
+    let length = keys.length();
 
+    if(length < 1){
+        abort EHashKeyCannotBeEmpty;
+    };
+
+    let mut index = length - 1;
+    let mut key_hash_created: vector<KeyHash> = vector[];
+
+    while(index >= 0){
+        key_hash_created.push_back(
+            key_hash::create(
+            keys[index],
+            hashes[index],
+        ));
+    index = index - 1;
+    };
+
+    let certification_batch_created = certification_batch::create(
+        ctx.sender(),
+        key_hash_created,
+        key,
+        length,
+        ctx
+    );
+
+    institution.add_batch_to_profile(
+        certification_batch_metrics::create(
+            object::id(&certification_batch_created),
+            length,
+            clock::timestamp_ms(clock),
+            ctx.sender(),
+            0,
+        ),
+        certification_batch_created,
+        key
+    );
 }

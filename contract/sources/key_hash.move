@@ -16,7 +16,7 @@ public(package) fun create (
 ): KeyHash {
     KeyHash {
         key,
-        hash
+        hash,
         revoked: false,
     }
 }
