@@ -55,9 +55,15 @@ public(package) fun delete_hash_from_batch (
     index: u16
 ){
     abort EHashCannotBeRemovedFromBatch;
+}  
+
+public (package) fun get_issuer(
+    batch:  &CertificationBatch
+): address {
+    batch.issuer
 }
 
-public(package) fun delete_batch(
+public(package) fun delete(
     cert: CertificationBatch
 ) {
     let CertificationBatch {

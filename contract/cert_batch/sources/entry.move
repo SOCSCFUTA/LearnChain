@@ -129,3 +129,21 @@ public entry fun issue_certificate_batch(
         key
     );
 }
+
+public fun delete_certification_batch(
+    _: &InstitutionCap,
+    batch: CertificationBatch,
+    ctx: &mut TxContext
+){
+    assert!(ctx.sender() == batch.get_issuer() , EActionNotAuthoriized);
+    batch.delete();
+
+}
+
+public entry fun add_hash_to_batch(
+    batch: &mut CertificationBatch,
+    key: vector<u8>,
+    hash: vector<u8>
+){
+    batch.add_hash_to_batch(hash, key);
+}
