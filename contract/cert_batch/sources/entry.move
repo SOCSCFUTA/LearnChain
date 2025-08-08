@@ -5,12 +5,17 @@ use learnchain::institution_cap::{Self, InstitutionCap};
 use learnchain::key_hash::{Self, KeyHash};
 use learnchain::certification_batch::{Self, CertificationBatch};
 use learnchain::certification_batch_metrics;
+use learnchain::fees;
 
 
 use std::string::String;
 use std::ascii::{Self, String as AsciiString};
 use sui::url::{Self, Url};
 use sui::clock::{Self, Clock};
+use sui::coin::Coin;
+
+use cert_coin::vault::Vault;
+use cert_coin::cert_coin::CERT_COIN;
 
 const EInstitutionProfileMintedAlready: u64 = 10012;
 const EKeyandHashLengthMismatch: u64 = 10013;
@@ -47,6 +52,7 @@ public entry fun revoke_institution_cap(
 }
 
 
+
 ///for institutions
 /// The institution  will  create once, a shared on-chain object which will serve as a record to store the information about the institution and certificates that was issued.
 
@@ -57,6 +63,9 @@ public entry fun create_institution_record(
     desciption: String,
     domain: vector<u8>,
     offers_revokable_cert: bool,
+    payment: Coin<CERT_COIN>,
+    vault: &mut Vault,
+    time: &Clock,
     ctx: &mut TxContext
 ){
 
@@ -70,6 +79,12 @@ public entry fun create_institution_record(
         ctx
     );
 
+    fees::charge_fee_to_create_institution_object(
+    payment,
+    vault,
+    time,
+    ctx
+    );
     transfer::public_transfer(institutionRecord, ctx.sender());
     cap.set_minted_institution_profile();
 }
@@ -87,6 +102,10 @@ public entry fun issue_certificate_batch(
     hashes: vector<vector<u8>>,
     key: vector<u8>,
     profile: &mut InstitutionProfile,
+    payment: Coin<CERT_COIN>,
+    vault: &mut Vault,
+    amount: u64,
+    time: &Clock,
     ctx: &mut TxContext
 ){
     assert!(ctx.sender() == institution.get_owner() , EActionNotAuthoriized);
@@ -116,6 +135,8 @@ public entry fun issue_certificate_batch(
         length,
         ctx
     );
+    
+    fees::charge_fee_to_issue_certificate_batch(payment, vault, amount, time, ctx);
 
     institution.add_batch_to_profile(
         certification_batch_metrics::create(
@@ -143,7 +164,13 @@ public fun delete_certification_batch(
 public entry fun add_hash_to_batch(
     batch: &mut CertificationBatch,
     key: vector<u8>,
-    hash: vector<u8>
+    hash: vector<u8>,
+    payment: Coin<CERT_COIN>,
+    vault: &mut Vault,
+    time: &Clock,
+    ctx: &mut  TxContext
 ){
+    assert!(ctx.sender() == batch.get_issuer() , EActionNotAuthoriized);
+    fees::charge_fee_to_add_hash_to_batch(payment, vault, time, ctx);
     batch.add_hash_to_batch(hash, key);
 }

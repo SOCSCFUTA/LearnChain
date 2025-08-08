@@ -97,3 +97,4 @@ public entry fun withdraw_all(
 
     transfer::public_transfer(coin_from_balance, ctx.sender());
 }
+ 

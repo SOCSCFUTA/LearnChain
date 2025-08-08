@@ -11,7 +11,7 @@ public struct VaultCap has key, store{
 public struct CAPACITY has drop {}
 
 fun init(
-    withdraw: CAPACITY,
+    otw: CAPACITY,
     ctx: &mut TxContext
 ){
     let cap = VaultCap{
