@@ -13,6 +13,7 @@ public struct Vault has key, store {
 
 public struct CoinDepositedToVault has copy, drop {
     id: ID,
+    amount: u64,
     initiator: address,
     timestamp: u64
 }
@@ -48,6 +49,7 @@ public entry fun deposit (
     let amount = coin::into_balance(coins);
     push::emit(CoinDepositedToVault{
         id: object::id(vault),
+        amount: amount.value(),
         initiator: ctx.sender(),
         timestamp: time.timestamp_ms()
     });
@@ -70,6 +72,25 @@ public entry fun withdraw(
         push::emit(CoinWithdrawnFromVault{
         id: object::id(vault),
         amount,
+        initiator: ctx.sender(),
+        timestamp: time.timestamp_ms()
+    });
+
+    transfer::public_transfer(coin_from_balance, ctx.sender());
+}
+
+public entry fun withdraw_all(
+    _cap: &VaultCap,
+    vault: &mut Vault,
+    time: &Clock,
+    ctx: &mut TxContext
+){
+    let coin_from_balance = coin::from_balance(balance::withdraw_all(&mut vault.balance),
+    ctx
+    );
+        push::emit(CoinWithdrawnFromVault{
+        id: object::id(vault),
+        amount: vault.balance.value(),
         initiator: ctx.sender(),
         timestamp: time.timestamp_ms()
     });
