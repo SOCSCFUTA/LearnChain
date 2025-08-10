@@ -11,10 +11,8 @@ public struct AdminCap has key, store {
     url: Url
 }
 
-public struct ADMIN has drop {}
 
 fun init(
-    otw: ADMIN,
     ctx: &mut TxContext
 ){
     transfer::public_transfer(
@@ -24,9 +22,10 @@ fun init(
             desciption: b"This is the first ever admin capability ever minted. It creates other admins for the platform, verify institutions, revoke institution priviledges...".to_string(),
             url: url::new_unsafe(ascii::string(b"https://link-to-image.com"))
         },
-    ctx.sender()
+        ctx.sender()
     )
 }
+
 
 public(package) fun mint(
     ctx: &mut TxContext
@@ -37,4 +36,32 @@ public(package) fun mint(
         desciption: b"This object is a signifier that your account can create other admins and also verify institutions before they interact with the blockchain .".to_string(),
         url: url::new_unsafe(ascii::string(b"https://link-to-image.com"))
     }
+}
+
+#[test_only]
+public fun test_init(
+    ctx: &mut TxContext
+){
+    init(ctx);
+}
+
+#[test_only]
+public fun get_name(
+    cap: &AdminCap
+): String {
+    cap.name
+}
+
+#[test_only]
+public fun get_description(
+    cap: &AdminCap
+): String {
+    cap.desciption
+}
+
+#[test_only]
+public fun get_url(
+    cap: &AdminCap
+): Url {
+    cap.url
 }

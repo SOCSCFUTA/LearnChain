@@ -1,11 +1,7 @@
-
-function App() {
-
+export default function App() {
   return (
-    <>
-    Running!
-    </>
+    <div className="bg-blue-500 text-white text-3xl font-bold flex items-center justify-center min-h-screen">
+      Tailwind with Vite + TS 🚀
+    </div>
   )
 }
-
-export default App

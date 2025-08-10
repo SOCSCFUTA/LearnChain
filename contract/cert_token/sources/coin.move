@@ -9,7 +9,7 @@ fun init( witness: CERT_COIN, ctx: &mut TxContext){
     let ( treasury, metadata ) = coin::create_currency(
         witness,
         3,
-        b"Cert Coin",
+        b"Cert",
         b"CCN",
         b"This token coin is used by institutions on the Learnchain platform when they issue certificate batch for a period of time.",
         option::some(url::new_unsafe(ascii::string(b"https://drive.usercontent.google.com/download?id=1VoLjzCCp18ZfZlcubwq9UkFiH3CKjG52&export=view&authuser=0"))),
