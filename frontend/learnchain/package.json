@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@mysten/dapp-kit": "^0.17.2",
+    "@mysten/enoki": "^0.11.5",
     "@mysten/sui": "^1.37.1",
     "@tailwindcss/postcss": "^4.1.11",
     "@tailwindcss/vite": "^4.1.11",

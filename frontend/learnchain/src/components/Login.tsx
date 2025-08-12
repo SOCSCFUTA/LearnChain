@@ -1,11 +1,6 @@
 import React from "react";
 import { FaWallet } from "react-icons/fa";
-import { MdEmail } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
-
-const handleGoogleSignIn = () => {
-    alert("Google sign-in logic here");
-};
 
 const Login = () => {
     const [showEmailForm, setShowEmailForm] = React.useState(false);
@@ -38,49 +33,9 @@ const Login = () => {
                     onClick={() => setShowEmailForm(!showEmailForm)}
                     className="w-full flex items-center justify-center gap-3 bg-[#0d1b2a] border border-blue-500/40 text-blue-200 font-medium py-3 px-4 rounded-lg hover:bg-[#112240] transition-all duration-300"
                 >
-                    <MdEmail size={20} />
-                    Sign in with Email
+                    <FcGoogle size={20} />
+                    Sign in with Google
                 </button>
-
-                {showEmailForm && (
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            alert("Email sign-in logic here");
-                        }}
-                        className="bg-[#0a192f] p-4 rounded-lg space-y-4"
-                    >
-                        <input
-                            type="email"
-                            placeholder="Enter your email"
-                            className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                        <input
-                            type="password"
-                            placeholder="Enter your password"
-                            className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                        <button
-                            type="submit"
-                            className="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg font-semibold transition"
-                        >
-                            Login
-                        </button>
-                    </form>
-                )}
-
-                {/* Additional Options */}
-                <div className="flex justify-center mt-4">
-                    <button
-                        onClick={handleGoogleSignIn}
-                        className="flex items-center gap-2 bg-white text-gray-700 px-4 py-2 rounded-lg shadow hover:shadow-md transition"
-                    >
-                        <FcGoogle size={20} />
-                        <span>Sign in with Google</span>
-                    </button>
-                </div>
 
                 {/* Footer */}
                 <p className="text-xs text-blue-400 mt-6">

@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Notfound from  "./components/Notfound";
+import RegisterEnokiWallets from "./components/RegisterWithEnoki";
 
 // Config options for the networks you want to connect to
 const { networkConfig } = createNetworkConfig({
@@ -34,6 +35,7 @@ export default function App() {
         }}
         networks={networkConfig}
         network='testnet'>
+        <RegisterEnokiWallets />
         <WalletProvider>
           <Routes />
           {

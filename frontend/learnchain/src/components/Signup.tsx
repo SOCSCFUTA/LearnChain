@@ -1,11 +1,7 @@
 import React from "react";
 import { FaWallet } from "react-icons/fa";
-import { MdEmail } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
 
-const handleGoogleSignUp = () => {
-    alert("Google sign-up logic here");
-};
 
 const Signup = () => {
     const [showEmailForm, setShowEmailForm] = React.useState(false);
@@ -38,55 +34,9 @@ const Signup = () => {
                     onClick={() => setShowEmailForm(!showEmailForm)}
                     className="w-full flex items-center justify-center gap-3 bg-[#0d1b2a] border border-blue-500/40 text-blue-200 font-medium py-3 px-4 rounded-lg hover:bg-[#112240] transition-all duration-300"
                 >
-                    <MdEmail size={20} />
-                    Sign up with Email
+                    <FcGoogle size={20} />
+                    Sign up with Google
                 </button>
-
-                {showEmailForm && (
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            alert("Email sign-up logic here");
-                        }}
-                        className="bg-[#0a192f] p-4 rounded-lg space-y-4"
-                    >
-                        <input
-                            type="text"
-                            placeholder="Full Name"
-                            className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                        <input
-                            type="email"
-                            placeholder="Enter your email"
-                            className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                        <input
-                            type="password"
-                            placeholder="Create a password"
-                            className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                        <button
-                            type="submit"
-                            className="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg font-semibold transition"
-                        >
-                            Sign Up
-                        </button>
-                    </form>
-                )}
-
-                {/* Google Signup */}
-                <div className="flex justify-center mt-4">
-                    <button
-                        onClick={handleGoogleSignUp}
-                        className="flex items-center gap-2 bg-white text-gray-700 px-4 py-2 rounded-lg shadow hover:shadow-md transition"
-                    >
-                        <FcGoogle size={20} />
-                        <span>Sign up with Google</span>
-                    </button>
-                </div>
 
                 {/* Footer */}
                 <p className="text-xs text-blue-400 mt-6">
