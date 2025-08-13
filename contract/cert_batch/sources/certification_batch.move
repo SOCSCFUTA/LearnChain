@@ -11,9 +11,8 @@ const EHashCannotBeRemovedFromBatch: u64 = 10011;
 public struct CertificationBatch has key, store {
     id: UID,
     issuer: address,
-    batch_year: u16,
-    count: u16,
-    accepts: bool,  //this is set to true for only a few minutes of hash addition
+    key: vector<u8>,
+    count: u64,
     hashes: vector<KeyHash> //holds the hash of each candidate's graduating certificate. 
 }
 
@@ -23,22 +22,20 @@ public struct CertificationBatchCreatedEvent  has drop,  copy{
     creator: address,
 }
 
-public(package) fun create_and_initialize_hash_addition(
+public(package) fun create(
     issuer: address,
-    batch_year: u16,
-    hash: vector<u8>,
+    hashes: vector<KeyHash>,
     key: vector<u8>,
-    count: u16,
+    count: u64,
     ctx: &mut TxContext
 ): CertificationBatch{
 
     CertificationBatch{
         id: object::new(ctx),
         issuer,
-        batch_year,
+        key,
         count,
-        accepts: true,
-        hashes: vector[key_hash::create(key, hash)],
+        hashes
     }
 }
 
@@ -48,33 +45,32 @@ public(package) fun add_hash_to_batch(
     hash: vector<u8>,
     key: vector<u8>
 ){
-    assert!(batch.accepts, EBatchNoLongerAcceptsHash);
     
     batch.hashes.push_back(key_hash::create(key, hash))
 }
 
-public(package) fun end_hash_addition_cycle(
-    batch: &mut CertificationBatch
-){
-    batch.accepts = false;
-}
 
 public(package) fun delete_hash_from_batch (
     batch: &mut CertificationBatch,
     index: u16
 ){
     abort EHashCannotBeRemovedFromBatch;
+}  
+
+public (package) fun get_issuer(
+    batch:  &CertificationBatch
+): address {
+    batch.issuer
 }
 
-public(package) fun delete_batch(
+public(package) fun delete(
     cert: CertificationBatch
 ) {
     let CertificationBatch {
         id,
         issuer: _,
-        batch_year: _,
+        key: _,
         count: _,
-        accepts: _,
         hashes: _,
     } = cert;
 
