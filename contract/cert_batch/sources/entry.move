@@ -61,7 +61,6 @@ public entry fun create_institution_record(
     name: String,
     url: vector<u8>,
     desciption: String,
-    domain: vector<u8>,
     offers_revokable_cert: bool,
     payment: Coin<CERT_COIN>,
     vault: &mut Vault,
@@ -74,8 +73,7 @@ public entry fun create_institution_record(
         name,
         url,
         desciption,
-        domain,
-        offers_revokable_cert,
+        offers_revokable_cert,  
         ctx
     );
 
