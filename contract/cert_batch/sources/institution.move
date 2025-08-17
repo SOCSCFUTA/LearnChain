@@ -1,6 +1,5 @@
 module learnchain::institution;
 
-
 use sui::event as push;
 use std::string::String;
 use sui::table::{Self, Table};
@@ -15,14 +14,13 @@ public struct InstitutionProfile has key, store {
     name: String,
     url: Url,
     desciption: String,
-    domain: Url,
     batch: Table<vector<u8>, CertificationBatch>,
     metrics: Table<vector<u8>, CertificationBatchMetrics>,
     record: Record,
     owner: address
 }
 
-public struct Record has store {
+public struct Record has store, copy {
     total_cert_count: u8,
     last_batch_size: u8,
     revoked_cert_count: u8,
@@ -38,12 +36,10 @@ public struct InstitutionProfileMinted has drop, copy {
 
 public struct INSTITUTION has drop {}
 
-
 public(package) fun create(
     name: String,
     url: vector<u8>,
     desciption: String,
-    domain: vector<u8>,
     offers_revokable_cert: bool,
     ctx: &mut TxContext
 ): InstitutionProfile {
@@ -53,7 +49,6 @@ public(package) fun create(
         name,
         url: url::new_unsafe(ascii::string(url)),
         desciption,
-        domain: url::new_unsafe(ascii::string(domain)),
         batch: table::new<vector<u8>, CertificationBatch>(ctx),
         metrics: table::new<vector<u8>, CertificationBatchMetrics>(ctx),
         record: Record {
@@ -90,4 +85,48 @@ public fun get_owner(
     institution:  &InstitutionProfile
 ): address {
     institution.owner
+}
+
+public fun get_name(
+    institution: &InstitutionProfile
+): String {
+    institution.name
+}
+
+public fun get_url(
+    institution: &InstitutionProfile
+): Url {
+    institution.url
+}
+
+public fun get_institution_reccord(
+    institution: &InstitutionProfile
+): Record {
+    institution.record
+}
+
+public fun get_entire_certificate_batch(
+    institution: &InstitutionProfile
+): &Table<vector<u8>, CertificationBatch>{
+    &institution.batch
+}
+
+public fun get_entire_certificate_metrics(
+    institution: &InstitutionProfile
+): &Table<vector<u8>, CertificationBatchMetrics>{
+    &institution.metrics
+}
+
+public fun  get_certificate_batch_by_key(
+    institution: &InstitutionProfile,
+    key: vector<u8>
+): &CertificationBatch{
+    &institution.batch[key]
+}
+
+public fun  get_certificate_batch_metrics_by_key(
+    institution: &InstitutionProfile,
+    key: vector<u8>
+): &CertificationBatchMetrics{
+    &institution.metrics[key]
 }
